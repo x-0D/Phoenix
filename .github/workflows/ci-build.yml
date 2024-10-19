@@ -104,15 +104,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-22.04, windows-2022, macos-13 ]
-        python-version: [ '3.8', '3.9', '3.10', '3.11', '3.12', '3.13-dev' ]
-        architecture: [ 'x86', 'x64' ]
+        os: [  windows-2022 ] #ubuntu-22.04, macos-13
+        python-version: [ '3.11', '3.12', '3.13-dev' ] #'3.8', '3.9', '3.10',
+        architecture: [ 'arm64', 'arm' ] #'x64', 'x86', 
         # Exclude x86 configs on non-Windows OSs
         exclude:
-          - os: ubuntu-22.04
-            architecture: x86
+          # - os: ubuntu-22.04
+          #   architecture: x86
+          # - os: ubuntu-22.04
+          #   architecture: arm64
+          # - os: ubuntu-22.04
+          #   architecture: arm
           - os: macos-13
             architecture: x86
+          - os: macos-13
+            architecture: arm
+          - os: windows-2022
+            architecture: arm
+            python-version: '3.8'
+          - os: windows-2022
+            architecture: arm
+            python-version: '3.9'
+          - os: windows-2022
+            architecture: arm
+            python-version: '3.10'
 
     env:
       VERSION: ${{ needs.build-source-dist.outputs.VERSION }}
@@ -136,8 +151,12 @@ jobs:
           elif [ ${{ matrix.os }} == windows-2022 ]; then
               if [ ${{ matrix.architecture }} == x64 ]; then
                   short_name=win64
-              else
+              elif [ ${{ matrix.architecture }} == x86 ]; then
                   short_name=win32
+              elif [ ${{ matrix.architecture }} == arm64 ]; then
+                  short_name=win-arm64
+              elif [ ${{ matrix.architecture }} == arm ]; then
+                  short_name=win-arm32
               fi
           fi
           echo "short_name=$short_name" >> "$GITHUB_OUTPUT"
